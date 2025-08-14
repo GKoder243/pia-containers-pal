@@ -1,0 +1,63 @@
+-- Création de la base
+CREATE DATABASE IF NOT EXISTS pia_containers;
+USE pia_containers;
+
+-- Table Utilisateur
+CREATE TABLE utilisateur (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(100),
+  email VARCHAR(100) UNIQUE,
+  mot_de_passe VARCHAR(255),
+  role ENUM('Admin', 'CC', 'PIA') NOT NULL
+);
+
+-- Table Camion
+CREATE TABLE camion (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  matricule VARCHAR(20) UNIQUE,
+  type ENUM('20', '40') NOT NULL
+);
+
+-- Table Conteneur
+CREATE TABLE conteneur (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  numero_bl VARCHAR(100),
+  consignataire VARCHAR(100),
+  client VARCHAR(100),
+  transitaire VARCHAR(100),
+  destination VARCHAR(100),
+  type_marchandise VARCHAR(100),
+  date_debarquement DATE,
+  regime ENUM('IM4', 'IM8'),
+  mode_enlevement ENUM('depotage', 'sur_camion'),
+  camion_id INT,
+  FOREIGN KEY (camion_id) REFERENCES camion(id) ON DELETE SET NULL
+);
+
+-- Table Checkpoint
+CREATE TABLE checkpoint (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(100),
+  type ENUM('sortie_port', 'entree_PIA', 'sortie_PIA')
+);
+
+-- Table Mouvement (journal de passage des conteneurs)
+CREATE TABLE mouvement (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  conteneur_id INT,
+  checkpoint_id INT,
+  date_heure DATETIME,
+  matricule_camion VARCHAR(20),
+  dt7 VARCHAR(100),
+  type_conteneur VARCHAR(10),
+  FOREIGN KEY (conteneur_id) REFERENCES conteneur(id),
+  FOREIGN KEY (checkpoint_id) REFERENCES checkpoint(id)
+);
+
+-- Checkpoints de base
+INSERT INTO checkpoint (nom, type) VALUES
+('Sortie LCT', 'sortie_port'),
+('Sortie Togo Terminal', 'sortie_port'),
+('Entrée PIA', 'entree_PIA'),
+('Sortie PIA', 'sortie_PIA');
+
