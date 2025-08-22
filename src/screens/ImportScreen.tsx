@@ -3,12 +3,11 @@ import { View, Text, StyleSheet, Alert, ActivityIndicator, ScrollView, Touchable
 import * as DocumentPicker from 'expo-document-picker';
 import RNPickerSelect from 'react-native-picker-select';
 import { uploadForPreview, processUploadedFile } from '../../services/api';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Poppins_400Regular, Poppins_600SemiBold, useFonts } from '@expo-google-fonts/poppins';
 import { FontAwesome6 as Icon } from '@expo/vector-icons';
+import { MotiView } from 'moti';
 import Toast from 'react-native-toast-message';
 
-// La constante REQUIRED_FIELDS reste la même
 const REQUIRED_FIELDS = [
   { id: 'numeroConteneur', label: 'Numéro de Conteneur' },
   { id: 'numeroBL', label: 'Numéro de Connaissement (BL)' },
@@ -115,27 +114,27 @@ const ImportScreen = () => {
   }
 
   return (
-    <LinearGradient colors={['#1A202C', '#2D3748', '#4A5568']} style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#F0F2F5' }}>
       <ScrollView contentContainerStyle={styles.container}>
         {isLoading && (
           <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#799EFF" />
+            <ActivityIndicator size="large" color="#2A3A68" />
           </View>
         )}
 
         {/* Étape 1 */}
-        <View style={styles.card}>
+        <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 300 }} style={styles.card}>
           <Text style={styles.cardTitle}>Étape 1: Sélectionner un Fichier</Text>
           <TouchableOpacity style={styles.button} onPress={handleSelectFile}>
-            <Icon name="file-excel" size={20} color="#fff" style={{marginRight: 10}} />
+            <Icon name="file-excel" size={20} color="#FFFFFF" style={{ marginRight: 10 }} />
             <Text style={styles.buttonText}>Choisir un Fichier Excel</Text>
           </TouchableOpacity>
           {file && !isLoading && <Text style={styles.fileName}>Fichier: {file.name}</Text>}
-        </View>
+        </MotiView>
 
         {/* Étape 2 */}
         {headers.length > 0 && !isLoading && (
-          <View style={styles.card}>
+          <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 300 }} style={styles.card}>
             <Text style={styles.cardTitle}>Étape 2: Correspondance des Colonnes</Text>
             {REQUIRED_FIELDS.map(field => (
               <View key={field.id} style={styles.mappingRow}>
@@ -149,42 +148,92 @@ const ImportScreen = () => {
                 />
               </View>
             ))}
-          </View>
+          </MotiView>
         )}
 
         {/* Étape 3 */}
         {Object.values(mapping).filter(v => v).length === REQUIRED_FIELDS.length && !isLoading && (
-          <View style={styles.card}>
+          <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 300 }} style={styles.card}>
             <Text style={styles.cardTitle}>Étape 3: Finalisation</Text>
             <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={handleProcessFile}>
-              <Icon name="upload" size={20} color="#fff" style={{marginRight: 10}} />
+              <Icon name="upload" size={20} color="#FFFFFF" style={{ marginRight: 10 }} />
               <Text style={styles.buttonText}>Lancer l'Importation</Text>
             </TouchableOpacity>
-          </View>
+          </MotiView>
         )}
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20, flexGrow: 1 },
-  loadingOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(26, 32, 44, 0.8)', zIndex: 10, justifyContent: 'center' },
+  container: {
+    padding: 20,
+    flexGrow: 1,
+    alignItems: 'center', // Centre les cartes horizontalement
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(240, 242, 245, 0.8)',
+    zIndex: 10,
+    justifyContent: 'center',
+  },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 20,
     marginBottom: 20,
+    elevation: 4,
+    shadowColor: '#2A3A68',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    width: '90%', // Réduit la largeur des cartes
+    alignSelf: 'center',
   },
-  cardTitle: { fontFamily: 'Poppins_600SemiBold', fontSize: 18, color: '#FFFFFF', marginBottom: 15 },
-  button: { backgroundColor: '#3B82F6', paddingVertical: 12, borderRadius: 8, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
-  buttonText: { color: '#fff', fontSize: 16, fontFamily: 'Poppins_600SemiBold' },
-  confirmButton: { backgroundColor: '#10B981' },
-  fileName: { marginTop: 15, fontFamily: 'Poppins_400Regular', fontStyle: 'italic', textAlign: 'center', color: '#A0AEC0' },
-  mappingRow: { marginBottom: 15 },
-  label: { fontFamily: 'Poppins_400Regular', marginBottom: 8, color: '#E2E8F0' },
+  cardTitle: {
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 18,
+    color: '#2A3A68',
+    marginBottom: 15,
+    textAlign: 'center', // Centre le titre
+  },
+  button: {
+    backgroundColor: '#2A3A68',
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '80%', // Réduit la largeur du bouton
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+  confirmButton: {
+    backgroundColor: '#F5C518',
+  },
+  fileName: {
+    marginTop: 15,
+    fontFamily: 'Poppins_400Regular',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    color: '#4A5568',
+  },
+  mappingRow: {
+    marginBottom: 15,
+    width: '90%', // Réduit la largeur des lignes de mapping
+    alignSelf: 'center',
+  },
+  label: {
+    fontFamily: 'Poppins_400Regular',
+    marginBottom: 8,
+    color: '#4A5568',
+    textAlign: 'center', // Centre le label
+  },
 });
 
 const pickerSelectStyles = StyleSheet.create({
@@ -192,23 +241,27 @@ const pickerSelectStyles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 12,
     paddingHorizontal: 10,
+    backgroundColor: '#F7FAFC',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 8,
-    color: '#FFFFFF',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E2E8F0',
+    color: '#2D3748',
     paddingRight: 30,
+    width: '80%', // Réduit la largeur des sélecteurs
+    alignSelf: 'center',
   },
   inputAndroid: {
     fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
+    backgroundColor: '#F7FAFC',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 8,
-    color: '#FFFFFF',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E2E8F0',
+    color: '#2D3748',
     paddingRight: 30,
+    width: '80%', // Réduit la largeur des sélecteurs
+    alignSelf: 'center',
   },
 });
 

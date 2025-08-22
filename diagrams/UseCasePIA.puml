@@ -1,0 +1,16 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+:"Agent PIA": as PIA
+
+rectangle Application {
+  PIA -- (Consulter les listes d'arrivées/départs)
+  PIA -- (Valider l'arrivée d'un conteneur)
+  PIA -- (Valider la sortie d'un conteneur)
+  
+  (Consulter les listes d'arrivées/départs) .> (S'authentifier) : <<include>>
+  (Valider l'arrivée d'un conteneur) .> (S'authentifier) : <<include>>
+  (Valider la sortie d'un conteneur) .> (S'authentifier) : <<include>>
+}
+@enduml

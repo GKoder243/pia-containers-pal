@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+:"Agent CC": as CC
+
+rectangle Application {
+  CC -- (Consulter la liste des conteneurs en attente)
+  CC -- (Valider la sortie d'un conteneur)
+  
+  (Consulter la liste des conteneurs en attente) .> (S'authentifier) : <<include>>
+  (Valider la sortie d'un conteneur) .> (S'authentifier) : <<include>>
+}
+@enduml

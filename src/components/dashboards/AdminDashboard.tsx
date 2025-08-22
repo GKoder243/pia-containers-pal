@@ -12,7 +12,6 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome6 as Icon } from '@expo/vector-icons';
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { getAdminDashboard } from '../../../services/api';
@@ -58,201 +57,155 @@ const AdminDashboard = () => {
     getAdminDashboardData();
   }, []);
 
-  if (!fontsLoaded) {
-    return null; // Or a splash screen
+  if (!fontsLoaded || loading) {
+    return (
+      <View style={[styles.container, styles.loadingOverlay]}>
+        <ActivityIndicator size="large" color="#2A3A68" />
+      </View>
+    );
   }
 
   const isChartReady = data && data.weeklyImportsData && data.weeklyImportsData.labels && data.weeklyImportsData.data && data.weeklyImportsData.data.length > 0;
 
   return (
-    <LinearGradient colors={['#1A202C', '#2D3748', '#4A5568']} style={styles.container}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <Image
-          source={require('../../../assets/images/traceability-bg.jpg')}
-          style={styles.backgroundImage}
-          resizeMode="cover"
-        />
-        {loading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#799EFF" />
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Image
+                source={require('../../../assets/images/logo-pal.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={styles.welcomeText}>Tableau de Bord</Text>
+            </View>
+            <Pressable
+              onPress={getAdminDashboardData}
+              disabled={loading}
+              style={styles.refreshButton}
+            >
+              <Icon name="rotate" size={22} color="#2A3A68" />
+            </Pressable>
           </View>
-        )}
-        {!loading && (
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.headerLeft}>
-                <Image
-                  source={require('../../../assets/images/logo-pal.png')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-                <Text style={styles.welcomeText}>Bienvenue</Text>
-              </View>
-              <Pressable
-                onPress={getAdminDashboardData}
-                disabled={loading}
-                style={styles.refreshButton}
-              >
-                <Icon name="rotate" size={22} color="#FFFFFF" />
-              </Pressable>
+
+          {/* KPI Cards */}
+          <View style={styles.kpiContainer}>
+            <View style={styles.kpiCard}>
+              <Icon name="box-archive" size={24} color="#2A3A68" />
+              <Text style={styles.kpiValue}>{data?.containersAwaitingExit ?? 0}</Text>
+              <Text style={styles.kpiLabel}>En Attente de Sortie</Text>
             </View>
-
-            {/* KPI Cards */}
-            <View style={styles.kpiContainer}>
-              <View style={styles.kpiCard}>
-                <Icon name="box-archive" size={24} color="#799EFF" />
-                <Text style={styles.kpiValue}>{data?.containersAwaitingExit ?? 0}</Text>
-                <Text style={styles.kpiLabel}>En Attente de Sortie</Text>
-              </View>
-              <View style={styles.kpiCard}>
-                <Icon name="truck-fast" size={24} color="#799EFF" />
-                <Text style={styles.kpiValue}>{data?.containersInTransit ?? 0}</Text>
-                <Text style={styles.kpiLabel}>En Transit vers PIA</Text>
-              </View>
-              <View style={styles.kpiCard}>
-                <Icon name="users" size={24} color="#799EFF" />
-                <Text style={styles.kpiValue}>{data?.activeUsers ?? 0}</Text>
-                <Text style={styles.kpiLabel}>Utilisateurs Actifs</Text>
-              </View>
+            <View style={styles.kpiCard}>
+              <Icon name="truck-fast" size={24} color="#2A3A68" />
+              <Text style={styles.kpiValue}>{data?.containersInTransit ?? 0}</Text>
+              <Text style={styles.kpiLabel}>En Transit vers PIA</Text>
             </View>
-
-            {/* --- Nouvelle Section Actions Rapides --- */}
-            <Text style={styles.sectionTitle}>Actions Rapides</Text>
-            <View style={styles.actionsContainer}>
-              {/* Action 1: Importer */}
-              <Pressable
-                style={styles.actionCard}
-                onPress={() => navigation.navigate('Import')}>
-                <LinearGradient colors={['#3B82F6', '#60A5FA']} style={styles.actionIconContainer}>
-                  <Icon name="upload" size={24} color="#FFFFFF" />
-                </LinearGradient>
-                <View style={styles.actionTextContainer}>
-                  <Text style={styles.actionTitle}>Importer des Données</Text>
-                  <Text style={styles.actionDescription}>Ajouter de nouveaux conteneurs</Text>
-                </View>
-              </Pressable>
-
-              {/* Action 2: Gérer les utilisateurs */}
-              <Pressable
-                style={styles.actionCard}
-                onPress={() => navigation.navigate('UserManagement')}>
-                <LinearGradient colors={['#10B981', '#4ADE80']} style={styles.actionIconContainer}>
-                  <Icon name="user-gear" size={24} color="#FFFFFF" />
-                </LinearGradient>
-                <View style={styles.actionTextContainer}>
-                  <Text style={styles.actionTitle}>Gérer les Utilisateurs</Text>
-                  <Text style={styles.actionDescription}>Administration des comptes</Text>
-                </View>
-              </Pressable>
-              
-              {/* Action 3: Générer un rapport */}
-              <Pressable
-                style={styles.actionCard}
-                onPress={() => Alert.alert('Bientôt disponible', 'La génération de rapports sera bientôt disponible.')}>
-                <LinearGradient colors={['#8B5CF6', '#A78BFA']} style={styles.actionIconContainer}>
-                  <Icon name="download" size={24} color="#FFFFFF" />
-                </LinearGradient>
-                <View style={styles.actionTextContainer}>
-                  <Text style={styles.actionTitle}>Générer un Rapport</Text>
-                  <Text style={styles.actionDescription}>Export des données</Text>
-                </View>
-              </Pressable>
+            <View style={styles.kpiCard}>
+              <Icon name="users" size={24} color="#2A3A68" />
+              <Text style={styles.kpiValue}>{data?.activeUsers ?? 0}</Text>
+              <Text style={styles.kpiLabel}>Utilisateurs Actifs</Text>
             </View>
+          </View>
 
-            {/* Section du Graphique */}
-            {isChartReady ? (
-              <View style={styles.chartContainer}>
-                <Text style={styles.chartTitle}>Imports des 7 derniers jours</Text>
-                <LineChart
-                  data={{
-                    labels: data.weeklyImportsData!.labels,
-                    datasets: [{ data: data.weeklyImportsData!.data }],
-                  }}
-                  width={Dimensions.get('window').width - 48} // Un peu moins large pour le padding
-                  height={220}
-                  yAxisSuffix=""
-                  chartConfig={{
-                    backgroundColor: '#1e3799',
-                    backgroundGradientFrom: '#4a69bd',
-                    backgroundGradientTo: '#1e3799',
-                    decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    style: { borderRadius: 16 },
-                    propsForDots: { r: '6', strokeWidth: '2', stroke: '#ffa726' },
-                  }}
-                  bezier
-                  style={{ marginVertical: 8, borderRadius: 16 }}
-                />
+          {/* --- Section Actions Rapides --- */}
+          <Text style={styles.sectionTitle}>Actions Rapides</Text>
+          <View style={styles.actionsContainer}>
+            <Pressable
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('Import')}>
+              <View style={[styles.actionIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                <Icon name="upload" size={24} color="#3182CE" />
               </View>
-            ) : (
-              <View style={styles.chartContainer}>
-                <Text style={styles.chartTitle}>Données du graphique non disponibles</Text>
+              <View style={styles.actionTextContainer}>
+                <Text style={styles.actionTitle}>Importer des Données</Text>
+                <Text style={styles.actionDescription}>Ajouter de nouveaux conteneurs</Text>
               </View>
-            )}
-          </ScrollView>
-        )}
+            </Pressable>
+
+            <Pressable
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('UserManagement')}>
+              <View style={[styles.actionIconContainer, { backgroundColor: '#E6FFFA' }]}>
+                <Icon name="user-gear" size={24} color="#38B2AC" />
+              </View>
+              <View style={styles.actionTextContainer}>
+                <Text style={styles.actionTitle}>Gérer les Utilisateurs</Text>
+                <Text style={styles.actionDescription}>Administration des comptes</Text>
+              </View>
+            </Pressable>
+            
+            <Pressable
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('Reports')}>
+              <View style={[styles.actionIconContainer, { backgroundColor: '#FAF5FF' }]}>
+                <Icon name="chart-pie" size={24} color="#805AD5" />
+              </View>
+              <View style={styles.actionTextContainer}>
+                <Text style={styles.actionTitle}>Voir les Rapports</Text>
+                <Text style={styles.actionDescription}>Consulter les statistiques</Text>
+              </View>
+            </Pressable>
+          </View>
+
+          {/* Section du Graphique */}
+          {isChartReady ? (
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>Imports des 7 derniers jours</Text>
+              <LineChart
+                data={{
+                  labels: data.weeklyImportsData!.labels,
+                  datasets: [{ data: data.weeklyImportsData!.data }],
+                }}
+                width={Dimensions.get('window').width - 48}
+                height={220}
+                yAxisSuffix=""
+                chartConfig={{
+                  backgroundColor: '#FFFFFF',
+                  backgroundGradientFrom: '#FFFFFF',
+                  backgroundGradientTo: '#FFFFFF',
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(42, 58, 104, ${opacity})`, // Bleu principal
+                  labelColor: (opacity = 1) => `rgba(74, 85, 104, ${opacity})`, // Gris texte
+                  style: { borderRadius: 16 },
+                  propsForDots: { r: '6', strokeWidth: '2', stroke: '#F5C518' }, // Point jaune
+                }}
+                bezier
+                style={{ marginVertical: 8, borderRadius: 16 }}
+              />
+            </View>
+          ) : (
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>Données du graphique non disponibles</Text>
+            </View>
+          )}
+        </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F0F2F5', // Fond gris clair
   },
   safeArea: {
     flex: 1,
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: width,
-    height: '100%',
-    opacity: 0.05,
-  },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26, 32, 44, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 10,
-  },
-  errorOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26, 32, 44, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    zIndex: 10,
-  },
-  errorText: {
-    color: '#FF6B6B',
-    fontSize: 16,
-    marginBottom: 20,
-    fontFamily: 'Poppins_700Bold',
-    textAlign: 'center',
-  },
-  retryButton: {
-    backgroundColor: '#799EFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontFamily: 'Poppins_700Bold',
-    fontSize: 16,
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: 24,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -265,8 +218,8 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontFamily: 'Poppins_700Bold',
-    fontSize: 24,
-    color: '#FFFFFF',
+    fontSize: 22,
+    color: '#2A3A68', // Titre en bleu
   },
   refreshButton: {
     padding: 8,
@@ -274,84 +227,93 @@ const styles = StyleSheet.create({
   kpiContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 24,
   },
   kpiCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 20,
+    backgroundColor: '#FFFFFF', // Fond blanc
+    borderRadius: 16,
+    padding: 16,
     marginHorizontal: 6,
     alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#2A3A68',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   kpiValue: {
     fontFamily: 'Poppins_700Bold',
-    fontSize: 32,
-    color: '#FFFFFF',
-    marginTop: 10,
-    marginBottom: 5,
+    fontSize: 28,
+    color: '#F5C518', // Chiffres en jaune
+    marginTop: 8,
+    marginBottom: 4,
   },
   kpiLabel: {
     fontFamily: 'Poppins_400Regular',
-    fontSize: 14,
-    color: '#A0AEC0',
+    fontSize: 13,
+    color: '#4A5568', // Texte gris
+    textAlign: 'center',
   },
   sectionTitle: {
     fontFamily: 'Poppins_700Bold',
     fontSize: 18,
-    color: '#FFFFFF',
-    marginBottom: 15,
+    color: '#2A3A68', // Titre de section en bleu
+    marginBottom: 16,
   },
   actionsContainer: {
-    marginTop: 10,
-    gap: 15,
+    gap: 12,
   },
   actionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#2A3A68',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   actionIconContainer: {
-    width: 50,
-    height: 50,
+    width: 48,
+    height: 48,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 16,
   },
   actionTextContainer: {
     flex: 1,
   },
   actionTitle: {
-    color: '#FFFFFF',
+    color: '#2D3748',
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
   },
   actionDescription: {
-    color: '#A0AEC0',
+    color: '#718096',
     fontSize: 12,
     fontFamily: 'Poppins_400Regular',
     marginTop: 2,
   },
   chartContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 12,
-    marginTop: 20,
+    marginTop: 24,
+    elevation: 4,
+    shadowColor: '#2A3A68',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   chartTitle: {
     fontFamily: 'Poppins_700Bold',
-    fontSize: 18,
-    color: '#FFFFFF',
-    marginBottom: 15,
+    fontSize: 16,
+    color: '#2A3A68',
+    marginBottom: 10,
     paddingLeft: 10,
   },
 });

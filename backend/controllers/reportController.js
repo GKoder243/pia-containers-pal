@@ -54,3 +54,32 @@ exports.getMovementHistory = async (req, res) => {
     if (connection) connection.release();
   }
 };
+
+exports.getContainerDetails = async (req, res) => {
+  const { numeroConteneur } = req.params;
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    const [[containerInfo]] = await connection.query('SELECT * FROM conteneur WHERE numero_conteneur = ?', [numeroConteneur]);
+    if (!containerInfo) {
+      return res.status(404).json({ message: 'Conteneur non trouvé' });
+    }
+    let [movementHistory] = await connection.query(`
+      SELECT m.date_heure, ch.nom as nom_checkpoint, u.nom as nom_agent, m.matricule_camion
+      FROM mouvement m
+      JOIN checkpoint ch ON m.checkpoint_id = ch.id
+      JOIN utilisateur u ON m.utilisateur_id = u.id
+      WHERE m.conteneur_id = ? ORDER BY m.date_heure ASC
+    `, [containerInfo.id]);
+
+    if (!movementHistory) {
+      movementHistory = []; // Assure que c'est toujours un tableau
+    }
+    res.json({ containerInfo, movementHistory });
+  } catch (error) {
+    console.error("Erreur getContainerDetails:", error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  } finally {
+    if (connection) connection.release();
+  }
+};

@@ -1,0 +1,46 @@
+@startuml
+' --- Style ---
+autonumber
+skinparam monochrome true
+skinparam shadowing false
+actor "Agent CC" as User
+
+participant "Application Mobile\n(Frontend)" as Frontend
+participant "API\n(Backend)" as Backend
+database "Base de Données" as DB
+
+User -> Frontend: Clique sur "Valider Sortie"
+activate Frontend
+Frontend -> User: Affiche la modale de confirmation
+User -> Frontend: Confirme la validation (avec camion)
+Frontend -> Backend: Envoie requête PUT /api/containers/{id}/validate-exit\n(avec token JWT et matricule)
+activate Backend
+
+Backend -> Backend: authMiddleware.verify(token, 'CC')
+alt Token valide et rôle correct
+    Backend -> DB: BEGIN TRANSACTION
+    activate DB
+    DB --> Backend: OK
+    
+    Backend -> DB: UPDATE conteneur SET statut='en_transit...', camion_id=...
+    DB --> Backend: OK
+    
+    Backend -> DB: INSERT INTO mouvement (...) VALUES (...)
+    DB --> Backend: OK
+    
+    Backend -> DB: COMMIT
+    DB --> Backend: OK
+    deactivate DB
+    
+    Backend --> Frontend: Réponse 200 OK (Succès)
+else Token invalide ou rôle incorrect
+    Backend --> Frontend: Réponse 401/403 (Erreur)
+end
+
+deactivate Backend
+
+Frontend -> User: Affiche notification "Succès"
+Frontend -> Frontend: Met à jour l'interface (retire conteneur de la liste)
+deactivate Frontend
+
+@enduml

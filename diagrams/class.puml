@@ -1,0 +1,87 @@
+@startuml
+' --- Style ---
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam shadowing false
+skinparam class {
+    BackgroundColor #F8F9FA
+    BorderColor #343A40
+    ArrowColor #343A40
+}
+
+' --- Classes ---
+
+class Utilisateur {
+  -id: int
+  -nom: string
+  -email: string
+  -mot_de_passe_hash: string
+  -role: Enum('Admin', 'CC', 'PIA')
+  -checkpoint_id: int (FK, nullable)
+  --
+  +login(email, mdp): string (token)
+  +createUser(data): Utilisateur
+  .. <i>Gère l'authentification et les permissions.
+  Le rôle détermine les actions possibles.</i> ..
+}
+
+class Conteneur {
+  -id: int
+  -numero_conteneur: string
+  -statut: Enum('attente_sortie_port', 'en_transit...', 'arrive_a_pia', 'sortie_pia')
+  -camion_id: int (FK)
+  -date_sortie_port: datetime
+  -date_arrivee_pia: datetime
+  -date_sortie_pia: datetime
+  -mode_enlevement: Enum
+  -regime: Enum
+  -destination: string
+  -client: string
+  --
+  +changerStatut(nouveauStatut): void
+  .. <i>Cœur de l'application. Représente
+  un conteneur physique et son état.</i> ..
+}
+
+class Camion {
+  -id: int
+  -matricule: string
+  -type: string
+  --
+  .. <i>Représente un camion utilisé
+  pour le transport.</i> ..
+}
+
+class Checkpoint {
+  -id: int
+  -nom: string (ex: "Sortie LCT", "Entrée PIA")
+  -type: Enum('sortie_port', 'entree_pia', 'sortie_pia')
+  --
+  .. <i>Point de contrôle physique où
+  les validations ont lieu.</i> ..
+}
+
+class Mouvement {
+  -id: int
+  -conteneur_id: int (FK)
+  -checkpoint_id: int (FK)
+  -utilisateur_id: int (FK)
+  -date_heure: datetime
+  -matricule_camion: string
+  --
+  +enregistrerMouvement(data): void
+  .. <i>Trace de chaque événement.
+  C'est l'historique pour le reporting.</i> ..
+}
+
+' --- Relations ---
+
+Utilisateur "1" -- "0..*" Mouvement : valide >
+Utilisateur "1" -- "0..1" Checkpoint : est affecté à >
+
+Conteneur "1" -- "1..*" Mouvement : a un historique de >
+Conteneur "1" -- "0..1" Camion : est transporté par >
+
+Checkpoint "1" -- "0..*" Mouvement : est le lieu de >
+
+@enduml

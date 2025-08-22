@@ -11,7 +11,6 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome6 as Icon } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import Toast from 'react-native-toast-message';
@@ -31,7 +30,6 @@ const LoginScreen = () => {
     try {
       await login({ email, mot_de_passe: motDePasse });
     } catch (error: any) {
-      // Ce bloc fonctionnera si AuthContext renvoie bien l'erreur
       Toast.show({
         type: 'error',
         text1: 'Erreur de connexion',
@@ -41,12 +39,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <LinearGradient
-      colors={['#799EFF', '#FEFFC4', '#FFDE63']}
-      style={styles.mainContainer}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
+    <View style={styles.mainContainer}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -54,26 +47,21 @@ const LoginScreen = () => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.formContainer}>
             {/* En-tête */}
-            <LinearGradient
-              colors={['#799EFF', '#FFBC4C']}
-              style={styles.header}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Icon name="shield-alt" size={48} color="#fff" style={styles.headerIcon} />
+            <View style={styles.header}>
+              <Icon name="shield-alt" size={48} color="#2A3A68" style={styles.headerIcon} />
               <Text style={styles.headerTitle}>Bienvenue</Text>
               <Text style={styles.headerSubtitle}>Connectez-vous à votre compte</Text>
-            </LinearGradient>
+            </View>
 
             {/* Corps du formulaire */}
             <View style={styles.formBody}>
               {/* Champ Email */}
               <View style={styles.inputContainer}>
-                <Icon name="envelope" size={20} color="#999999" style={styles.inputIcon} />
+                <Icon name="envelope" size={20} color="#A0AEC0" style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Email"
-                  placeholderTextColor="#999999"
+                  placeholderTextColor="#A0AEC0"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -84,11 +72,11 @@ const LoginScreen = () => {
 
               {/* Champ Mot de passe */}
               <View style={styles.inputContainer}>
-                <Icon name="lock" size={20} color="#999999" style={styles.inputIcon} />
+                <Icon name="lock" size={20} color="#A0AEC0" style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Mot de passe"
-                  placeholderTextColor="#999999"
+                  placeholderTextColor="#A0AEC0"
                   value={motDePasse}
                   onChangeText={setMotDePasse}
                   secureTextEntry={secureTextEntry}
@@ -101,7 +89,7 @@ const LoginScreen = () => {
                   <Icon
                     name={secureTextEntry ? 'eye-slash' : 'eye'}
                     size={20}
-                    color="#999999"
+                    color="#A0AEC0"
                   />
                 </TouchableOpacity>
               </View>
@@ -112,79 +100,74 @@ const LoginScreen = () => {
                 onPress={handleLogin}
                 disabled={loading}
               >
-                <LinearGradient
-                  colors={['#799EFF', '#FFBC4C']}
-                  style={styles.loginButtonGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  {loading ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <Text style={styles.loginButtonText}>Se connecter</Text>
-                  )}
-                </LinearGradient>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.loginButtonText}>Se connecter</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: '#F0F2F5', // Nouveau fond
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center', // Centre verticalement
-    alignItems: 'center', // Centre horizontalement
-    paddingVertical: 20,
-    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   formContainer: {
     width: '100%',
     maxWidth: 400,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 25,
+    backgroundColor: '#FFFFFF', // Fond de la carte en blanc
+    borderRadius: 16, // Bords arrondis
     overflow: 'hidden',
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
+    elevation: 8, // Ombre pour Android
+    shadowColor: '#2A3A68', // Couleur de l'ombre
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
   },
   header: {
-    paddingVertical: 30, // Réduit un peu
+    backgroundColor: '#FFFFFF', // Fond de l'en-tête blanc
+    paddingVertical: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   headerIcon: {
-    marginBottom: 10,
+    marginBottom: 15,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#2A3A68', // Texte en bleu principal
     marginBottom: 5,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.9,
+    color: '#4A5568', // Texte plus doux
   },
   formBody: {
-    padding: 30, // Padding uniforme
+    padding: 30,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
+    backgroundColor: '#F7FAFC', // Fond d'input légèrement différent
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: '#E2E8F0',
     marginBottom: 20,
   },
   inputIcon: {
@@ -193,9 +176,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 50,
+    height: 55, // Un peu plus haut
     fontSize: 16,
-    color: '#333333',
+    color: '#2D3748',
     paddingRight: 15,
   },
   eyeButton: {
@@ -203,23 +186,21 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     marginTop: 10,
-    borderRadius: 15, // Uniformisé avec les inputs
-    overflow: 'hidden',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  loginButtonGradient: {
-    paddingVertical: 15,
+    borderRadius: 12,
+    backgroundColor: '#2A3A68', // Fond du bouton en bleu principal
+    paddingVertical: 18, // Plus haut
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 3,
+    shadowColor: '#2A3A68',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   loginButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#FFFFFF', // Texte du bouton en blanc
   },
 });
 

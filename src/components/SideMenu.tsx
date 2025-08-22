@@ -81,15 +81,52 @@ const SideMenu: React.FC<DrawerContentComponentProps> = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1e272e' },
-  header: { padding: 20, paddingTop: 40, borderBottomWidth: 1, borderBottomColor: '#485460' },
-  headerTitle: { color: '#d2dae2', fontSize: 24, fontFamily: 'Poppins_700Bold' },
-  headerSubtitle: { color: '#808e9b', fontSize: 14, fontFamily: 'Poppins_400Regular' },
-  menuContainer: { flex: 1, paddingTop: 20 },
-  menuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 20 },
-  menuText: { color: '#EAEAEA', fontSize: 16, fontFamily: 'Poppins_400Regular', marginLeft: 15 },
-  footer: { borderTopWidth: 1, borderTopColor: '#485460', padding: 20 },
-  logoutButton: { flexDirection: 'row', alignItems: 'center' },
+  container: {
+    flex: 1,
+    backgroundColor: '#2A3A68'
+  },
+  header: {
+    padding: 20,
+    paddingTop: 40,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)'
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontFamily: 'Poppins_700Bold'
+  },
+  headerSubtitle: {
+    color: '#F0F2F5',
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    opacity: 0.8,
+  },
+  menuContainer: {
+    flex: 1,
+    paddingTop: 20
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20
+  },
+  menuText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    marginLeft: 15
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 20
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
 });
 
 export default SideMenu;
